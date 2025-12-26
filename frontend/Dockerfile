@@ -27,7 +27,9 @@ RUN npm install --legacy-peer-deps --omit=dev
 
 # Copy built Next.js app
 COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
+
+# Copy public folder if it exists (optional)
+RUN mkdir -p public
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs
