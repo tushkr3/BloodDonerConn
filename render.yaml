@@ -2,7 +2,7 @@ services:
   - type: web
     name: donorconnect-backend
     env: node
-    repo: https://github.com/tushkr3/DonorConnectT.git
+    repo: https://github.com/tushkr3/BloodDonerConn.git
     branch: main
     rootDir: backend
     buildCommand: npm install && npm run build
@@ -23,7 +23,7 @@ services:
   - type: web
     name: donorconnect-frontend
     env: node
-    repo: https://github.com/tushkr3/DonorConnectT.git
+    repo: https://github.com/tushkr3/BloodDonerConn.git
     branch: main
     rootDir: frontend
     buildCommand: npm install && npm run build
@@ -32,3 +32,4 @@ services:
     envVars:
       - key: NEXT_PUBLIC_API_URL
         value: https://donorconnect-backend.onrender.com
+
