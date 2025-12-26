@@ -2,21 +2,33 @@ services:
   - type: web
     name: donorconnect-backend
     env: node
-    repo: https://github.com/MUKUL-PRASAD-SIGH/DonorConnect
+    repo: https://github.com/tushkr3/DonorConnectT.git
     branch: main
     rootDir: backend
-    buildCommand: npm install
-    startCommand: npm start
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    plan: starter
     envVars:
-      - key: DATABASE_URL
-        sync: false
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: MONGODB_URI
+        value: mongodb+srv://krtushar21_db_user:BHpDcGeulvwGPEaa@cluster0.c0gr28o.mongodb.net/blood-donor-prod?retryWrites=true&w=majority
+      - key: JWT_SECRET
+        value: blood-donor-super-secure-jwt-secret-key-256-bits-production-2025
+      - key: FRONTEND_URL
+        value: https://donorconnect-frontend.onrender.com
 
   - type: web
     name: donorconnect-frontend
-    plan: starter
-    env: static
-    repo: https://github.com/MUKUL-PRASAD-SIGH/DonorConnect
+    env: node
+    repo: https://github.com/tushkr3/DonorConnectT.git
     branch: main
     rootDir: frontend
     buildCommand: npm install && npm run build
-    staticPublishPath: build
+    startCommand: npm start
+    plan: starter
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://donorconnect-backend.onrender.com
