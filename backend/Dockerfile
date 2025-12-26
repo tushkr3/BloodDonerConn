@@ -1,15 +1,12 @@
-FROM node:18-alpine
+FROM node:18-alpine AS builder
 
 WORKDIR /app
-
-# Install curl for health checks
-RUN apk add --no-cache curl
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies (using npm install instead of npm ci for flexibility)
-RUN npm install --omit=dev
+# Install ALL dependencies (including dev) for build
+RUN npm install
 
 # Copy source code
 COPY . .
@@ -17,11 +14,25 @@ COPY . .
 # Build the application
 RUN npm run build
 
+# Production image
+FROM node:18-alpine AS runner
+
+WORKDIR /app
+
+# Copy package files from builder
+COPY --from=builder /app/package*.json ./
+
+# Install only production dependencies
+RUN npm install --omit=dev
+
+# Copy built app from builder
+COPY --from=builder /app/dist ./dist
+
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nestjs -u 1001
 
-# Change ownership of the app directory
+# Change ownership
 RUN chown -R nestjs:nodejs /app
 
 USER nestjs
@@ -31,7 +42,7 @@ EXPOSE 3001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:3001/health || exit 1
+    CMD node -e "require('http').get('http://localhost:3001/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
 
 # Start the application
 CMD ["npm", "run", "start:prod"]
